@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../Services/Services";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,22 +16,15 @@ export default function LoginPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple dummy validation
-    if (!formData.email || !formData.password) {
-      setError("Please fill all fields");
-      return;
+    try {
+      const username = await login(formData);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     }
-
-    setError("");
-    console.log("Login data:", formData);
-
-    // TODO: Send login data to backend using Axios
-
-    // Redirect to dashboard/homepage
-    navigate("/dashboard"); // Update route as needed
   };
 
   return (

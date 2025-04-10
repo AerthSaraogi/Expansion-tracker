@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signup } from "../Services/Services";
+
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,17 +19,19 @@ export default function SignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
-    setError("");
-    console.log("Signup data submitted:", formData);
-    navigate("/");
+    try {
+        await signup(formData);
+        navigate("/login"); // redirect after successful signup
+      } catch (err) {
+        setError(err.response?.data?.message || "Signup failed");
+      }
   };
 
   return (
